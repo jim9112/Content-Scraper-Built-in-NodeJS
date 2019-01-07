@@ -1,0 +1,19 @@
+{
+  "name": "treehouse_project_six",
+  "version": "1.0.0",
+  "description": "JS Content Scraper",
+  "main": "scraper.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jim9112/treehouse_project_six.git"
+  },
+  "author": "Jimmy Hannan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jim9112/treehouse_project_six/issues"
+  },
+  "homepage": "https://github.com/jim9112/treehouse_project_six#readme"
+}
