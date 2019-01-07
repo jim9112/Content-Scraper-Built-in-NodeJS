@@ -4,7 +4,8 @@
   "description": "JS Content Scraper",
   "main": "scraper.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node scraper.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,9 @@
   "bugs": {
     "url": "https://github.com/jim9112/treehouse_project_six/issues"
   },
-  "homepage": "https://github.com/jim9112/treehouse_project_six#readme"
+  "homepage": "https://github.com/jim9112/treehouse_project_six#readme",
+  "dependencies": {
+    "crawler": "^1.2.0",
+    "csv-writer": "^1.2.0"
+  }
 }
