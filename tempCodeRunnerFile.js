@@ -1,1 +1,1 @@
-grabShirtDetails.queue('http://shirts4mike.com/shirt.php?id=101');
+console.log(this);

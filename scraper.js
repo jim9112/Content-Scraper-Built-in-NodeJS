@@ -2,10 +2,19 @@ var Crawler = require("crawler");
 var fs = require("fs");
 var createCsvWriter = require('csv-writer').createObjectCsvWriter;
 
-var shirtPages = [];
+// array to contain links to shirt pages
+const shirtPages = [];
 
+// array to contain objects to be printed to csv
+const records = [];
 
-// check for data directory and reate if missing
+// create new date to be used later
+var currentDate = new Date();
+
+// creates title for csv file with current date YYYY-MM-DD.csv
+var dateNameCSV = currentDate.toISOString().slice(0,10);
+
+// check for data directory and create if missing
 const checkDirectorySync = (directory) => {  
     try {
       fs.statSync(directory);
@@ -17,7 +26,7 @@ checkDirectorySync('data');
 
 // Creates file structure and header for csv
 const csvWriter = createCsvWriter({
-    path: 'data/test.csv',
+    path: `data/${dateNameCSV}.csv`,
     header: [
         {id: 'title', title: 'TITLE'},
         {id: 'price', title: 'PRICE'},
@@ -27,54 +36,56 @@ const csvWriter = createCsvWriter({
     ]
 });
  
-const records = [
-    {title: 'Bob',  price: 'French'},
-    {title: 'Mary', price: 'English'}
-];
- 
-
-
-
-
+// crawler scrapes shirts4mike hompage
 var grabShirtLinks = new Crawler({
     maxConnections : 10,
-    // This will be called for each crawled page
+    retries : 0,
     callback : function (error, res, done) {
         if(error){
-            console.log(error);
+            console.log(`I'm sorry ${error.hostname} is not available at the moment, please check your internet connection or try again later`);
         }else{
             var $ = res.$;
+            // scrapes links to individual shirt pages and puts them in the shirtPages array
             for (i=0; i<$("ul.products li a").length; i++){
                 shirtPages.push('http://shirts4mike.com/' + $("ul.products li a")[i].attribs.href);
             }
+            // trigger crawler for individual shirt pages
             grabShirtDetails.queue(shirtPages);
         }
         done();
     }
 });
 
-
+// crawler scrapes individual tshirt pages
 var grabShirtDetails = new Crawler({
     maxConnections : 10,
-    // This will be called for each crawled page
+    retries : 0,
     callback : function (error, res, done) {
         if(error){
-            console.log(error);
+            console.log(`I'm sorry ${error.hostname} is not available at the moment, please check your internet connection or try again later`);
         }else{
             var $ = res.$;
-            console.log($("div.shirt-details h1").text());
+            var pageAddr = this.uri; 
+            // pushes scraped data to records array
+            records.push({
+                title: $("div.shirt-picture span img")[0].attribs.alt,
+                price: $("span.price").text(),
+                imageURL: 'http://shirts4mike.com/' + $("div.shirt-picture span img")[0].attribs.src,
+                url: pageAddr,
+                time: currentDate.toLocaleTimeString()
+            });
         }
-        
+        // writes csv file once all shirt pages have been scraped
+        if (shirtPages.length === records.length){
+            csvWriter.writeRecords(records)   
+    .then(() => {
+        console.log('Scraping complete, results can be found in the data folder.');
+    });
+        }
         done();
     }
 });
 
 
-
+// initiates crawlers
 grabShirtLinks.queue('http://shirts4mike.com/shirts.php');
-
-// writes csv file
-csvWriter.writeRecords(records)       // returns a promise
-    .then(() => {
-        console.log('...Done');
-    });
